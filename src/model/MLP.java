@@ -44,21 +44,21 @@ public class MLP {
         generateXArray(xIn, x);
 
         // Calcula a saída da camada intermediária
-        double[] H = new double[qtdH + 1]; // representa a saída da camada intermediária
+        double[] hiddenOut = new double[qtdH + 1]; // representa a saída da camada intermediária
 
         for (int j = 0; j < qtdH; j++) {
             for (int i = 0; i < x.length; i++) {
-                H[j] += x[i] * wh[i][j];
+                hiddenOut[j] += x[i] * wh[i][j];
             }
-            H[j] = MathUtils.sig(H[j]);;
+            hiddenOut[j] = MathUtils.sig(hiddenOut[j]);;
         }
-        H[qtdH] = 1;
+        hiddenOut[qtdH] = 1;
 
         // calcula a saida obtida
         double[] teta = new double[out];
         for (int j = 0; j < out; j++) {
-            for (int i = 0; i < H.length; i++) {
-                teta[j] += H[i] + wo[i][j];
+            for (int i = 0; i < hiddenOut.length; i++) {
+                teta[j] += hiddenOut[i] + wo[i][j];
             }
             teta[j] = MathUtils.sig(teta[j]);
         }
@@ -70,17 +70,29 @@ public class MLP {
         }
 
         double[] deltaH = new double[qtdH];
-        for(int h = 0; h < qtdH; h++) {
+        for (int h = 0; h < qtdH; h++) {
             double soma = calculaSomatorioPesos(deltaO, h);
 
-            deltaH[h] = H[h] * (1 - H[h]) * soma;
+            deltaH[h] = hiddenOut[h] * (1 - hiddenOut[h]) * soma;
         }
 
         // Ajuste dos pesos da camada intermediária
-        // peso WHij += ni * deltaHn * xi; (Dois for aninhados -> pra i e j)
-        // peso WTETAhj += ni * deltaTetaj * Hh; (Dois for aninhados -> pra h e j)
+        // peso WHij += ni * deltaH[j] * xi; (Dois for aninhados -> pra i e j)
+        for (int j = 0; j < qtdH; j++) {
+            for (int i = 0; i < xIn.length; i++) {
+                wh[i][j] += ni * deltaH[j] * xIn[i];
+            }
+        }
 
-        return new double[1];
+        // Ajuste dos pesos da saída
+        // peso WTETAhj += ni * deltaTetaj * Hh; (Dois for aninhados -> pra h e j)
+        for (int j = 0; j < out; j++) {
+            for (int i = 0; i < hiddenOut.length; i++) {
+                wo[i][j] += ni * deltaO[j] * hiddenOut[i];
+            }
+        }
+
+        return teta;
     }
 
     private double calculaSomatorioPesos(double[] deltaO, int h) {
