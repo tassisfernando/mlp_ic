@@ -26,14 +26,15 @@ public class MLP {
         this.wo = new double[qtdH + 1][out];
 
         //inicializar os pesos: pegar do código anterior
-        this.gerarRandomW();
+        this.gerarRandomW(this.wh);
+        this.gerarRandomW(this.wo);
     }
 
-    private void gerarRandomW() {
+    private void gerarRandomW(double[][] w) {
         Random random = new Random();
-        for(int i = 0; i < wh.length; i++) {
-            for(int j = 0; j < wh[0].length; j++) {
-                wh[i][j] = random.nextDouble() * (RANGE_MAX - RANGE_MIN) + RANGE_MIN;
+        for(int i = 0; i < w.length; i++) {
+            for(int j = 0; j < w[0].length; j++) {
+                w[i][j] = random.nextDouble() * (RANGE_MAX - RANGE_MIN) + RANGE_MIN;
             }
         }
     }
@@ -79,8 +80,8 @@ public class MLP {
         // Ajuste dos pesos da camada intermediária
         // peso WHij += ni * deltaH[j] * xi; (Dois for aninhados -> pra i e j)
         for (int j = 0; j < qtdH; j++) {
-            for (int i = 0; i < xIn.length; i++) {
-                wh[i][j] += ni * deltaH[j] * xIn[i];
+            for (int i = 0; i < x.length; i++) {
+                wh[i][j] += ni * deltaH[j] * x[i];
             }
         }
 

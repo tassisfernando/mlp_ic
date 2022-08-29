@@ -23,7 +23,6 @@ public class MLPRunner {
             { { 1D, 1D }, { 0D } }
     };
 
-
     /* OR */
 //    private static final double[][][] DATABASE = {
 //            { { 0D, 0D }, { 0D } },
@@ -46,11 +45,11 @@ public class MLPRunner {
 //    };
 
     public static void main(String[] args) {
-        final double NI = 0.1;
+        final double NI = 0.01;
         final int N_EPOCAS = 10000;
+        final int QTD_H = 2;
 
-        int qtdH = 2;
-        MLP mlp = new MLP(DATABASE[0][0].length, DATABASE[0][1].length, qtdH, NI);
+        MLP mlp = new MLP(DATABASE[0][0].length, DATABASE[0][1].length, QTD_H, NI);
         double erroEp, erroAm = 0D;
 
         for(int e = 0; e < N_EPOCAS; e++) {
